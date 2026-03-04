@@ -1,18 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <projectDescription>
-	<name>FlashSpanLibrary</name>
-	<comment></comment>
-	<projects>
-	</projects>
-	<buildSpec>
-		<buildCommand>
-			<name>com.adobe.flexbuilder.project.flexbuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-	</buildSpec>
-	<natures>
-		<nature>com.adobe.flexbuilder.project.flexlibnature</nature>
-		<nature>com.adobe.flexbuilder.project.actionscriptnature</nature>
-	</natures>
+  <name>FlashSpanLibrary</name>
+  <comment></comment>
+  <projects></projects>
+  <buildSpec>
+    <buildCommand>
+      <name>com.adobe.flexbuilder.project.flexbuilder</name>
+      <arguments></arguments>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>com.adobe.flexbuilder.project.flexlibnature</nature>
+    <nature>com.adobe.flexbuilder.project.actionscriptnature</nature>
+  </natures>
 </projectDescription>

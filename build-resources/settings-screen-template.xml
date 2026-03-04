@@ -1,9 +1,9 @@
 <screen>
-	<id>10</id>
-	<ip>127.0.0.1</ip>
-	<port>63644</port>
-	<screenWidth>320</screenWidth>
-	<screenHeight>480</screenHeight>
-	<xOffset>0</xOffset>
-	<yOffset>0</yOffset>
+  <id>10</id>
+  <ip>127.0.0.1</ip>
+  <port>63644</port>
+  <screenWidth>320</screenWidth>
+  <screenHeight>480</screenHeight>
+  <xOffset>0</xOffset>
+  <yOffset>0</yOffset>
 </screen>

@@ -1,11 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <settings>
-	<totalWidth>640</totalWidth>
-	<totalHeight>480</totalHeight>
-	<scaleFactor>1</scaleFactor>
-	<server>auto</server> <!-- auto or a number -->
-	<syncMode>frame</syncMode> <!-- time or frame -->
-	<networkMap>
-		<!-- Filled in with settings-screen-template.xml -->
-	</networkMap>
+  <totalWidth>640</totalWidth>
+  <totalHeight>480</totalHeight>
+  <scaleFactor>1</scaleFactor>
+  <!-- auto or a number -->
+  <server>auto</server>
+  <!-- time or frame -->
+  <syncMode>frame</syncMode>
+  <networkMap>
+    <!-- Filled in with settings-screen-template.xml -->
+  </networkMap>
 </settings>

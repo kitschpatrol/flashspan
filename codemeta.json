@@ -1,0 +1,21 @@
+{
+  "@context": "https://w3id.org/codemeta/3.1",
+  "@type": "SoftwareSourceCode",
+  "name": "FlashSpan",
+  "version": "1.0.0",
+  "description": "An ActionScript 3 library for spanning and synchronizing flash content across multiple computers and displays.",
+  "author": {
+    "@type": "Person",
+    "email": "eric@ericmika.com",
+    "name": "Eric Mika",
+    "url": "https://ericmika.com"
+  },
+  "keywords": ["flash", "actionscript", "as3", "video-wall"],
+  "applicationCategory": "SoftwareSourceCode",
+  "url": "https://github.com/kitschpatrol/flashspan",
+  "codeRepository": "https://github.com/kitschpatrol/flashspan",
+  "issueTracker": "https://github.com/kitschpatrol/flashspan/issues",
+  "dateCreated": "2008-05-12",
+  "license": "https://spdx.org/licenses/LGPL-3.0",
+  "programmingLanguage": "ActionScript"
+}

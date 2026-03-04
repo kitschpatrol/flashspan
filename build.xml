@@ -1,276 +1,222 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <project name="Build File" basedir="." default="build">
-	
-	<!-- External Settings -->
-    <property file="${basedir}/build.properties" description="Subjective properties." />	
-	
-	<!-- Required for OSX 10.6 / Snow Leopard Performance -->
-	<condition property="local.d32" value="-d32" >
-		<and>
-			<equals arg1="${sun.arch.data.model}" arg2="64" />
-			<equals arg1="${os.arch}" arg2="x86_64" />
-			<os family="mac" />
-		</and>
-	</condition>
-	
-	<!-- Ant Contrib -->
-	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
-	  <classpath>
-	    <pathelement location="${basedir}/build-resources/ant-contrib-1.0b3.jar" />
-	  </classpath>
-	</taskdef>
-	
-	<taskdef name="for" classname="net.sf.antcontrib.logic.ForTask" onerror="fail">
-		<classpath>
-			<pathelement location="${basedir}/build-resources/ant-contrib-1.0b3.jar" />
-		</classpath>
-	</taskdef>
-	
-	<!-- XML Task http://today.java.net/pub/a/today/2006/11/01/xml-manipulation-using-xmltask.html -->
-	<!-- Note ":" namespace weirdness in xpaths -->
-	<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" onerror="fail">
-		<classpath>
-			<pathelement location="${basedir}/build-resources/xmltask.jar" />
-		</classpath>
-	</taskdef>
-
-
-    <!-- Compilers and tools -->
-	<property name="MXMLC" value="${SDK_HOME}/lib/mxmlc.jar" />
-	<property name="COMPC" value="${SDK_HOME}/lib/compc.jar" />
-	<property name="ADL" value="${SDK_HOME}/bin/adl" />
-	<property name="ADT" value="${SDK_HOME}/lib/adt.jar" />
-
-    <!-- Conditional target directories, get overwritten depending on debug or release -->
-	<var name="debug" value="false" />
-	<var name="libraryOutputDir" value="${LIBRARY_RELEASE_DIR}" />
-	<var name="exampleAppOutputDir" value="${EXAMPLE_APP_RELEASE_DIR}" />	
-	<var name="multiExampleAppOutputDir" value="${MULTI_EXAMPLE_APP_RELEASE_DIR}" />
-
-	<math result="screenWidth" operand1="${TOTAL_WIDTH}" operation="/" operand2="${SCREEN_COUNT}" datatype="int" />
-
-    
-    <target name="usage">
-        <echo message="FlashSpan Automated Build Tool" />
-        <echo message="" />
-        <echo message="Available targets:" />
-        <echo message="clean                 --&gt; Removes all generated directories." />
-        <echo message="lib-compile           --&gt; Compiles the FlashSpan.swc library file in release mode." />
-        <echo message="lib-compile-debug     --&gt; Compiles the FlashSpan.swc library file in debug mode." />
-        <echo message="example-compile       --&gt; Compiles the example application in release mode." />
-        <echo message="example-compile-debug --&gt; Compiles the example application in debug mode." />
-        <echo message="test                  --&gt; Compiles everything in debug mode and launches a single instance of the example application." />
-        <echo message="test-multi            --&gt; Compiles everything in debug mode and launches multiple instances of the example application." />
-        <echo message=""/>
-    </target>
-
-    <target name="clean" description="clean up">
-        <delete dir="${LIBRARY_DEBUG_DIR}" />	
-        <delete dir="${LIBRARY_RELEASE_DIR}" />	
-        <delete dir="${EXAMPLE_APP_DEBUG_DIR}" />
-        <delete dir="${EXAMPLE_APP_RELEASE_DIR}" />
-        <delete dir="${MULTI_EXAMPLE_APP_DEBUG_DIR}" />
-        <delete dir="${MULTI_EXAMPLE_APP_RELEASE_DIR}" />
-    </target>
-
-     <target name="init" depends="clean">
-        <mkdir dir="${LIBRARY_RELEASE_DIR}" />
-        <mkdir dir="${EXAMPLE_APP_RELEASE_DIR}" />
-    </target>
-	
-	<target name="setdebug">
-		<echo message="Debug mode active" />
-		<var name="debug" value="true" />
-		<var name="libraryOutputDir" value="${LIBRARY_DEBUG_DIR}" />
-		<var name="exampleAppOutputDir" value="${EXAMPLE_APP_DEBUG_DIR}" />
-		<var name="multiExampleAppOutputDir" value="${MULTI_EXAMPLE_APP_DEBUG_DIR}" />		
-        <mkdir dir="${EXAMPLE_APP_DEBUG_DIR}" />
-        <mkdir dir="${LIBRARY_DEBUG_DIR}" />
-        <mkdir dir="${MULTI_EXAMPLE_APP_DEBUG_DIR}" />
-	</target>
-	
-	
-	<!-- The Library -->
-	<target name="lib-compile" depends="init, lib-compile-base">
-		<echo message="Compiled library in release mode" />
-	</target>
-	
-	<target name="lib-compile-debug" depends="init, setdebug, lib-compile-base">
-		<echo message="Compiled library in debug mode" />
-	</target>
-	
-	<target name="lib-compile-base">
-		<!-- Compile the library to an SWC -->		
-		<java jar="${COMPC}" fork="true" failonerror="true">
-			<arg value="-debug=${debug}" />
-			<arg value="+flexlib=${SDK_HOME}/frameworks" />
-			<arg value="+configname=air" />
-			<arg value="-include-sources=${basedir}/FlashSpanLibrary/src" />
-			<arg value="-verbose-stacktraces=${debug}" />
-			<arg value="-library-path=${basedir}/FlashSpanLibrary/libs" />
-			<arg value="-output=${libraryOutputDir}/${LIBRARY_NAME}.swc" />
-		</java>
-	</target>
-	
-	
-	<!-- The Example -->
-    <target name="example-compile" depends="lib-compile, example-compile-base">
-		<echo message="Compiled example in release mode" />
-    </target>	
-	
-    <target name="example-compile-debug" depends="lib-compile-debug, example-compile-base">
-		<echo message="Compiled example in debug mode" />
-    </target>
-
-	<target name="example-compile-base">
-		<!-- Compile the example to an SWF -->
-        <java jar="${MXMLC}" fork="true" failonerror="true">
-            <arg value="-debug=${debug}" />
-            <arg value="+flexlib=${SDK_HOME}/frameworks" />
-            <arg value="+configname=air" />
-            <arg value="-file-specs=${basedir}/${EXAMPLE_APP_NAME}/src/${EXAMPLE_APP_NAME}.as" />
-			<arg value="-verbose-stacktraces=${debug}" />
-			<arg value="-include-libraries+=${libraryOutputDir}/${LIBRARY_NAME}.swc" />
-			<arg value="-library-path=${basedir}/FlashSpanExample/libs" />			
-            <arg value="-output=${exampleAppOutputDir}/${EXAMPLE_APP_NAME}.swf" />
-			<arg value="-default-frame-rate=60" />
-			<arg value="-default-size" />
-			<arg value="${screenWidth}" />	
-			<arg value="${TOTAL_HEIGHT}" />
-        </java>
-
-		<!-- Copy and change the app xml to point to the local swf -->
-		<xmltask source="${basedir}/${EXAMPLE_APP_NAME}/src/${EXAMPLE_APP_NAME}-app.xml" dest="${exampleAppOutputDir}/${EXAMPLE_APP_NAME}-app.xml"  failWithoutMatch="true"> 
-			<replace path=" /:application/:initialWindow/:content/text()" withText="${EXAMPLE_APP_NAME}.swf" />
-			<replace path=" /:application/:initialWindow/:title/text()" withText="${EXAMPLE_APP_NAME}" />
-			<replace path=" /:application/:initialWindow/:width/text()" withText="${screenWidth}" />
-			<replace path=" /:application/:initialWindow/:height/text()" withText="${TOTAL_HEIGHT}" />
-			<replace path=" /:application/:initialWindow/:x/text()" withText="0" />
-			<replace path=" /:application/:initialWindow/:y/text()" withText="0" />
-		</xmltask>
-		
-		<!-- Copy over the base template -->
-		<xmltask source="${basedir}/build-resources/settings-template.xml" dest="${exampleAppOutputDir}/flash_span_settings.xml"> 
-			<!-- Clear the comment placeholder -->
-   			<remove path="//child::comment()"/>
-		</xmltask>
-		
-		<antcall target="add-screen-settings">
-			<param name="screenID" value="0"/>
-			<param name="destination" value="${exampleAppOutputDir}/flash_span_settings.xml"/>			
-		</antcall>
-
-	</target>
-	
-	<!-- Launchers -->
-	<target name="test" depends="example-compile-debug, testbase">
-		<echo message="Testing single screen" />
-	</target>
-	
-	<target name="testbase">
-		<echo message="Launching single screen" />		
-		<!-- Also passed in the screen ID, 0 in this case, as a command line arg -->
-		<exec executable="${ADL}" spawn="true">
-			<arg value="${exampleAppOutputDir}/${EXAMPLE_APP_NAME}-app.xml" />
-			<arg value="--" />
-			<arg value="0" />
-		</exec>
-	</target>
-	
-
-
-
-	<target name="add-screen-settings" description="inserts a node of screen settings xml into the settings file, takes screenID and destination parameters">
-		<!-- Put the screen settings in a buffer -->
-		
-		<!--  Calculate screen x offset. Test only supports horizontally arranged screens. -->
-		<math result="xOffset" operand1="${screenWidth}" operation="*" operand2="${screenID}" datatype="int" />		
-		<math result="port" operand1="${STARTING_PORT}" operation="+" operand2="${screenID}" datatype="int" />				
-		
-		<xmltask source="${basedir}/build-resources/settings-screen-template.xml" destbuffer="screenSettingsBuffer" failWithoutMatch="true">
-			<replace path=" /screen/id/text()" withText="${screenID}" />
-			<replace path=" /screen/xOffset/text()" withText="${xOffset}" />
-			<replace path=" /screen/port/text()" withText="${port}" />			
-			<replace path=" /screen/screenWidth/text()" withText="${screenWidth}" />
-			<replace path=" /screen/screenHeight/text()" withText="${TOTAL_HEIGHT}" />			
-		</xmltask>
-
-		<!-- Add screen settings to template -->
-		<xmltask source="${destination}" dest="${destination}" failWithoutMatch="true" outputter="simple:4">
-			<insert path="/settings/networkMap" buffer="screenSettingsBuffer" />
-
-		</xmltask>
-	</target>	
-	
-	
-	<target name="test-multi" depends="example-compile-debug, test-multi-base">
-		<echo message="Testing multiple screens" />
-	</target>	
-	
-	<!-- Local multi-instance testing (is a pain) -->	
-	<target name="test-multi-base">
-		<delete dir="${MULTI_EXAMPLE_APP_DEBUG_DIR}" />
-        <mkdir dir="${MULTI_EXAMPLE_APP_DEBUG_DIR}" />
-
-		<math result="screenCountMinusOne" operand1="${SCREEN_COUNT}" operation="-" operand2="1" datatype="int" />
-		<echo message="${screenCountMinusOne}" />
-
-		<!-- Clear the initial screen setting, going to be replaced below -->
-
-
-		<!-- Revise and put the flash_span_settings.xml into a buffer -->
-		<xmltask source="${basedir}/build-resources/settings-template.xml" dest="${MULTI_EXAMPLE_APP_DEBUG_DIR}/settings-temp.xml" failWithoutMatch="true">
-			<!-- Clear the comment placeholder -->
-   			<remove path="//child::comment()"/>
-			<replace path="/settings/totalWidth/text()" withText="${TOTAL_WIDTH}" />
-			<replace path="/settings/totalHeight/text()" withText="${TOTAL_HEIGHT}" />
-		</xmltask>
-		
-	    <for param="i" end="${screenCountMinusOne}"> 
-			<sequential>
-				<antcall target="add-screen-settings">
-					<param name="screenID" value="@{i}"/>
-					<param name="destination" value="${MULTI_EXAMPLE_APP_DEBUG_DIR}/settings-temp.xml"/>
-				</antcall>	
-			</sequential>		
-		</for>
-
-		<!-- Build the folders -->
-	    <for param="i" end="${screenCountMinusOne}"> 
-			<sequential>
-				<echo message="Creating files for screen @{i}" />
-			
-				<var name="thisScreenDir" value="${MULTI_EXAMPLE_APP_DEBUG_DIR}/screen-@{i}/" />
-			
-				<!-- Create folder -->
-	     				<mkdir dir="${thisScreenDir}" />
-			
-				<!-- Copy swf file -->
-				<copy file="${EXAMPLE_APP_DEBUG_DIR}/${EXAMPLE_APP_NAME}.swf" todir="${thisScreenDir}" />
-
-				<!--  Calculate screen x offset. Test only supports horizontally arranged screens. -->
-				<math result="xOffset" operand1="${screenWidth}" operation="*" operand2="@{i}" datatype="int" />
-
-				<!-- Copy and change the settings xml -->
-				<xmltask source="${MULTI_EXAMPLE_APP_DEBUG_DIR}/settings-temp.xml" dest="${thisScreenDir}/flash_span_settings.xml" />
-	
-				<!-- Copy and revise app file to have unique ID, title, and tiled position on screen -->
-				<xmltask source="${EXAMPLE_APP_DEBUG_DIR}/${EXAMPLE_APP_NAME}-app.xml" dest="${thisScreenDir}/${EXAMPLE_APP_NAME}-app.xml" failWithoutMatch="true"> 
-					<replace path="/:application/:id/text()" withText="${EXAMPLE_APP_NAME}@{i}" />
-					<replace path="/:application/:initialWindow/:title/text()" withText="${EXAMPLE_APP_NAME} @{i}" />
-					<replace path="/:application/:initialWindow/:x/text()" withText="${xOffset}" />
-				</xmltask>
-			
-				<!-- Launch with ADL, pass in ID for local testing (production should find ID from static IP) -->
-				<exec executable="${ADL}" spawn="true">
-					<arg value="${thisScreenDir}/${EXAMPLE_APP_NAME}-app.xml" />
-					<arg value="--" />
-					<arg value="@{i}" />
-				</exec>
-			</sequential> 
-		</for>
-		
-		<delete file="${MULTI_EXAMPLE_APP_DEBUG_DIR}/settings-temp.xml" />
-	</target>
-	
+  <!-- External Settings -->
+  <property file="${basedir}/build.properties" description="Subjective properties." />
+  <!-- Required for OSX 10.6 / Snow Leopard Performance -->
+  <condition property="local.d32" value="-d32">
+    <and>
+      <equals arg1="${sun.arch.data.model}" arg2="64" />
+      <equals arg1="${os.arch}" arg2="x86_64" />
+      <os family="mac" />
+    </and>
+  </condition>
+  <!-- Ant Contrib -->
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+    <classpath>
+      <pathelement location="${basedir}/build-resources/ant-contrib-1.0b3.jar" />
+    </classpath>
+  </taskdef>
+  <taskdef name="for" classname="net.sf.antcontrib.logic.ForTask" onerror="fail">
+    <classpath>
+      <pathelement location="${basedir}/build-resources/ant-contrib-1.0b3.jar" />
+    </classpath>
+  </taskdef>
+  <!-- XML Task http://today.java.net/pub/a/today/2006/11/01/xml-manipulation-using-xmltask.html -->
+  <!-- Note ":" namespace weirdness in xpaths -->
+  <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" onerror="fail">
+    <classpath>
+      <pathelement location="${basedir}/build-resources/xmltask.jar" />
+    </classpath>
+  </taskdef>
+  <!-- Compilers and tools -->
+  <property name="MXMLC" value="${SDK_HOME}/lib/mxmlc.jar" />
+  <property name="COMPC" value="${SDK_HOME}/lib/compc.jar" />
+  <property name="ADL" value="${SDK_HOME}/bin/adl" />
+  <property name="ADT" value="${SDK_HOME}/lib/adt.jar" />
+  <!-- Conditional target directories, get overwritten depending on debug or release -->
+  <var name="debug" value="false" />
+  <var name="libraryOutputDir" value="${LIBRARY_RELEASE_DIR}" />
+  <var name="exampleAppOutputDir" value="${EXAMPLE_APP_RELEASE_DIR}" />
+  <var name="multiExampleAppOutputDir" value="${MULTI_EXAMPLE_APP_RELEASE_DIR}" />
+  <math result="screenWidth" operand1="${TOTAL_WIDTH}" operation="/" operand2="${SCREEN_COUNT}" datatype="int" />
+  <target name="usage">
+    <echo message="FlashSpan Automated Build Tool" />
+    <echo message="" />
+    <echo message="Available targets:" />
+    <echo message="clean --&gt; Removes all generated directories." />
+    <echo message="lib-compile --&gt; Compiles the FlashSpan.swc library file in release mode." />
+    <echo message="lib-compile-debug --&gt; Compiles the FlashSpan.swc library file in debug mode." />
+    <echo message="example-compile --&gt; Compiles the example application in release mode." />
+    <echo message="example-compile-debug --&gt; Compiles the example application in debug mode." />
+    <echo message="test --&gt; Compiles everything in debug mode and launches a single instance of the example application." />
+    <echo message="test-multi --&gt; Compiles everything in debug mode and launches multiple instances of the example application." />
+    <echo message="" />
+  </target>
+  <target name="clean" description="clean up">
+    <delete dir="${LIBRARY_DEBUG_DIR}" />
+    <delete dir="${LIBRARY_RELEASE_DIR}" />
+    <delete dir="${EXAMPLE_APP_DEBUG_DIR}" />
+    <delete dir="${EXAMPLE_APP_RELEASE_DIR}" />
+    <delete dir="${MULTI_EXAMPLE_APP_DEBUG_DIR}" />
+    <delete dir="${MULTI_EXAMPLE_APP_RELEASE_DIR}" />
+  </target>
+  <target name="init" depends="clean">
+    <mkdir dir="${LIBRARY_RELEASE_DIR}" />
+    <mkdir dir="${EXAMPLE_APP_RELEASE_DIR}" />
+  </target>
+  <target name="setdebug">
+    <echo message="Debug mode active" />
+    <var name="debug" value="true" />
+    <var name="libraryOutputDir" value="${LIBRARY_DEBUG_DIR}" />
+    <var name="exampleAppOutputDir" value="${EXAMPLE_APP_DEBUG_DIR}" />
+    <var name="multiExampleAppOutputDir" value="${MULTI_EXAMPLE_APP_DEBUG_DIR}" />
+    <mkdir dir="${EXAMPLE_APP_DEBUG_DIR}" />
+    <mkdir dir="${LIBRARY_DEBUG_DIR}" />
+    <mkdir dir="${MULTI_EXAMPLE_APP_DEBUG_DIR}" />
+  </target>
+  <!-- The Library -->
+  <target name="lib-compile" depends="init, lib-compile-base">
+    <echo message="Compiled library in release mode" />
+  </target>
+  <target name="lib-compile-debug" depends="init, setdebug, lib-compile-base">
+    <echo message="Compiled library in debug mode" />
+  </target>
+  <target name="lib-compile-base">
+    <!-- Compile the library to an SWC -->
+    <java jar="${COMPC}" fork="true" failonerror="true">
+      <arg value="-debug=${debug}" />
+      <arg value="+flexlib=${SDK_HOME}/frameworks" />
+      <arg value="+configname=air" />
+      <arg value="-include-sources=${basedir}/FlashSpanLibrary/src" />
+      <arg value="-verbose-stacktraces=${debug}" />
+      <arg value="-library-path=${basedir}/FlashSpanLibrary/libs" />
+      <arg value="-output=${libraryOutputDir}/${LIBRARY_NAME}.swc" />
+    </java>
+  </target>
+  <!-- The Example -->
+  <target name="example-compile" depends="lib-compile, example-compile-base">
+    <echo message="Compiled example in release mode" />
+  </target>
+  <target name="example-compile-debug" depends="lib-compile-debug, example-compile-base">
+    <echo message="Compiled example in debug mode" />
+  </target>
+  <target name="example-compile-base">
+    <!-- Compile the example to an SWF -->
+    <java jar="${MXMLC}" fork="true" failonerror="true">
+      <arg value="-debug=${debug}" />
+      <arg value="+flexlib=${SDK_HOME}/frameworks" />
+      <arg value="+configname=air" />
+      <arg value="-file-specs=${basedir}/${EXAMPLE_APP_NAME}/src/${EXAMPLE_APP_NAME}.as" />
+      <arg value="-verbose-stacktraces=${debug}" />
+      <arg value="-include-libraries+=${libraryOutputDir}/${LIBRARY_NAME}.swc" />
+      <arg value="-library-path=${basedir}/FlashSpanExample/libs" />
+      <arg value="-output=${exampleAppOutputDir}/${EXAMPLE_APP_NAME}.swf" />
+      <arg value="-default-frame-rate=60" />
+      <arg value="-default-size" />
+      <arg value="${screenWidth}" />
+      <arg value="${TOTAL_HEIGHT}" />
+    </java>
+    <!-- Copy and change the app xml to point to the local swf -->
+    <xmltask source="${basedir}/${EXAMPLE_APP_NAME}/src/${EXAMPLE_APP_NAME}-app.xml" dest="${exampleAppOutputDir}/${EXAMPLE_APP_NAME}-app.xml" failWithoutMatch="true">
+      <replace path="/:application/:initialWindow/:content/text()" withText="${EXAMPLE_APP_NAME}.swf" />
+      <replace path="/:application/:initialWindow/:title/text()" withText="${EXAMPLE_APP_NAME}" />
+      <replace path="/:application/:initialWindow/:width/text()" withText="${screenWidth}" />
+      <replace path="/:application/:initialWindow/:height/text()" withText="${TOTAL_HEIGHT}" />
+      <replace path="/:application/:initialWindow/:x/text()" withText="0" />
+      <replace path="/:application/:initialWindow/:y/text()" withText="0" />
+    </xmltask>
+    <!-- Copy over the base template -->
+    <xmltask source="${basedir}/build-resources/settings-template.xml" dest="${exampleAppOutputDir}/flash_span_settings.xml">
+      <!-- Clear the comment placeholder -->
+      <remove path="//child::comment()" />
+    </xmltask>
+    <antcall target="add-screen-settings">
+      <param name="screenID" value="0" />
+      <param name="destination" value="${exampleAppOutputDir}/flash_span_settings.xml" />
+    </antcall>
+  </target>
+  <!-- Launchers -->
+  <target name="test" depends="example-compile-debug, testbase">
+    <echo message="Testing single screen" />
+  </target>
+  <target name="testbase">
+    <echo message="Launching single screen" />
+    <!-- Also passed in the screen ID, 0 in this case, as a command line arg -->
+    <exec executable="${ADL}" spawn="true">
+      <arg value="${exampleAppOutputDir}/${EXAMPLE_APP_NAME}-app.xml" />
+      <arg value="--" />
+      <arg value="0" />
+    </exec>
+  </target>
+  <target name="add-screen-settings" description="inserts a node of screen settings xml into the settings file, takes screenID and destination parameters">
+    <!-- Put the screen settings in a buffer -->
+    <!--  Calculate screen x offset. Test only supports horizontally arranged screens. -->
+    <math result="xOffset" operand1="${screenWidth}" operation="*" operand2="${screenID}" datatype="int" />
+    <math result="port" operand1="${STARTING_PORT}" operation="+" operand2="${screenID}" datatype="int" />
+    <xmltask source="${basedir}/build-resources/settings-screen-template.xml" destbuffer="screenSettingsBuffer" failWithoutMatch="true">
+      <replace path="/screen/id/text()" withText="${screenID}" />
+      <replace path="/screen/xOffset/text()" withText="${xOffset}" />
+      <replace path="/screen/port/text()" withText="${port}" />
+      <replace path="/screen/screenWidth/text()" withText="${screenWidth}" />
+      <replace path="/screen/screenHeight/text()" withText="${TOTAL_HEIGHT}" />
+    </xmltask>
+    <!-- Add screen settings to template -->
+    <xmltask source="${destination}" dest="${destination}" failWithoutMatch="true" outputter="simple:4">
+      <insert path="/settings/networkMap" buffer="screenSettingsBuffer" />
+    </xmltask>
+  </target>
+  <target name="test-multi" depends="example-compile-debug, test-multi-base">
+    <echo message="Testing multiple screens" />
+  </target>
+  <!-- Local multi-instance testing (is a pain) -->
+  <target name="test-multi-base">
+    <delete dir="${MULTI_EXAMPLE_APP_DEBUG_DIR}" />
+    <mkdir dir="${MULTI_EXAMPLE_APP_DEBUG_DIR}" />
+    <math result="screenCountMinusOne" operand1="${SCREEN_COUNT}" operation="-" operand2="1" datatype="int" />
+    <echo message="${screenCountMinusOne}" />
+    <!-- Clear the initial screen setting, going to be replaced below -->
+    <!-- Revise and put the flash_span_settings.xml into a buffer -->
+    <xmltask source="${basedir}/build-resources/settings-template.xml" dest="${MULTI_EXAMPLE_APP_DEBUG_DIR}/settings-temp.xml" failWithoutMatch="true">
+      <!-- Clear the comment placeholder -->
+      <remove path="//child::comment()" />
+      <replace path="/settings/totalWidth/text()" withText="${TOTAL_WIDTH}" />
+      <replace path="/settings/totalHeight/text()" withText="${TOTAL_HEIGHT}" />
+    </xmltask>
+    <for param="i" end="${screenCountMinusOne}">
+      <sequential>
+        <antcall target="add-screen-settings">
+          <param name="screenID" value="@{i}" />
+          <param name="destination" value="${MULTI_EXAMPLE_APP_DEBUG_DIR}/settings-temp.xml" />
+        </antcall>
+      </sequential>
+    </for>
+    <!-- Build the folders -->
+    <for param="i" end="${screenCountMinusOne}">
+      <sequential>
+        <echo message="Creating files for screen @{i}" />
+        <var name="thisScreenDir" value="${MULTI_EXAMPLE_APP_DEBUG_DIR}/screen-@{i}/" />
+        <!-- Create folder -->
+        <mkdir dir="${thisScreenDir}" />
+        <!-- Copy swf file -->
+        <copy file="${EXAMPLE_APP_DEBUG_DIR}/${EXAMPLE_APP_NAME}.swf" todir="${thisScreenDir}" />
+        <!--  Calculate screen x offset. Test only supports horizontally arranged screens. -->
+        <math result="xOffset" operand1="${screenWidth}" operation="*" operand2="@{i}" datatype="int" />
+        <!-- Copy and change the settings xml -->
+        <xmltask source="${MULTI_EXAMPLE_APP_DEBUG_DIR}/settings-temp.xml" dest="${thisScreenDir}/flash_span_settings.xml" />
+        <!-- Copy and revise app file to have unique ID, title, and tiled position on screen -->
+        <xmltask source="${EXAMPLE_APP_DEBUG_DIR}/${EXAMPLE_APP_NAME}-app.xml" dest="${thisScreenDir}/${EXAMPLE_APP_NAME}-app.xml" failWithoutMatch="true">
+          <replace path="/:application/:id/text()" withText="${EXAMPLE_APP_NAME}@{i}" />
+          <replace path="/:application/:initialWindow/:title/text()" withText="${EXAMPLE_APP_NAME} @{i}" />
+          <replace path="/:application/:initialWindow/:x/text()" withText="${xOffset}" />
+        </xmltask>
+        <!-- Launch with ADL, pass in ID for local testing (production should find ID from static IP) -->
+        <exec executable="${ADL}" spawn="true">
+          <arg value="${thisScreenDir}/${EXAMPLE_APP_NAME}-app.xml" />
+          <arg value="--" />
+          <arg value="@{i}" />
+        </exec>
+      </sequential>
+    </for>
+    <delete file="${MULTI_EXAMPLE_APP_DEBUG_DIR}/settings-temp.xml" />
+  </target>
 </project>
