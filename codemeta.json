@@ -3,19 +3,43 @@
   "@type": "SoftwareSourceCode",
   "name": "FlashSpan",
   "version": "2.0.0",
-  "description": "An ActionScript 3 library for spanning and synchronizing flash content across multiple computers and displays.",
+  "description": "Span and synchronize realtime interactive Flash content across multiple computers and displays.",
   "author": {
     "@type": "Person",
     "email": "eric@ericmika.com",
     "name": "Eric Mika",
     "url": "https://ericmika.com"
   },
-  "keywords": ["flash", "actionscript", "as3", "video-wall"],
-  "applicationCategory": "SoftwareSourceCode",
+  "keywords": [
+    "flash",
+    "actionscript",
+    "as3",
+    "adobe-air",
+    "video-wall",
+    "multi-screen"
+  ],
   "url": "https://github.com/kitschpatrol/flashspan",
   "codeRepository": "https://github.com/kitschpatrol/flashspan",
   "issueTracker": "https://github.com/kitschpatrol/flashspan/issues",
   "dateCreated": "2008-05-12",
-  "license": "https://spdx.org/licenses/LGPL-3.0",
-  "programmingLanguage": "ActionScript"
+  "license": "https://spdx.org/licenses/LGPL-3.0-or-later",
+  "programmingLanguage": "ActionScript",
+  "runtimePlatform": "Adobe AIR",
+  "softwareRequirements": [
+    {
+      "@type": "SoftwareSourceCode",
+      "name": "Apache Flex SDK",
+      "url": "https://flex.apache.org"
+    },
+    {
+      "@type": "SoftwareSourceCode",
+      "name": "Apache Ant",
+      "url": "https://ant.apache.org"
+    },
+    {
+      "@type": "SoftwareSourceCode",
+      "name": "AS3 Commons Logging",
+      "url": "https://github.com/bridgeZS/as3commons/tree/master/as3-commons-logging"
+    }
+  ]
 }

@@ -68,7 +68,7 @@ package com.kitschpatrol.flashspan {
 			var fileStream:FileStream = new FileStream();
 			fileStream.open(file, FileMode.READ);
 			
-			var fileContents:String = fileStream.readUTFBytes(fileStream.bytesAvailable); // Read the contens of the 
+			var fileContents:String = fileStream.readUTFBytes(fileStream.bytesAvailable); // Read the contents of the 
 			fileStream.close(); // Clean up and close the file stream			
 			
 			// parse the xml

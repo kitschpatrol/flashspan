@@ -47,7 +47,7 @@ package com.kitschpatrol.flashspan {
 		// (one character header)(body)
 		
 		// certified packet format, gets a confirmation that the packet was received
-		// (certifed header)(packet header)(body),(certified packets sent count)
+		// (certified header)(packet header)(body),(certified packets sent count)
 		
 		// certified response format
 		// (certified response header)(certified packets sent count)		
@@ -124,7 +124,7 @@ package com.kitschpatrol.flashspan {
 				
 			// Start checking for who is connected. TODO Make this optional via config
 			if (isServer) {
-				logger.info("Checking for connections every second since we're the server");
+				logger.info("Checking for connections every five seconds since we're the server");
 				settings.thisScreen.connected = true; // obviously we're connected
 				connectionCheckTimer = new Timer(5000); // check every second?
 				connectionCheckTimer.addEventListener(TimerEvent.TIMER, connectionCheck);
@@ -405,7 +405,7 @@ package com.kitschpatrol.flashspan {
 		
 		// Basic transmission functions
 		
-		// Sends a packet and requests a conformation from recipient		
+		// Sends a packet and requests a confirmation from recipient		
 		private function sendCertified(screen:NetworkedScreen, message:String, timeout:int = 500):void {
 			// adds a certification wrapper
 			var certifiedPacket:CertifiedPacket = new CertifiedPacket(message, screen, timeout, onTimeout);
@@ -481,7 +481,7 @@ package com.kitschpatrol.flashspan {
 			logger.fatal(
 				"Could not find screen ID from machine IP!\n" + 
 				"Make sure this computer's static ethernet IP is in one of the <screen> elements in the settings.xml file.\n" +
-				"Alternately, set the screen ID manually by  calling settings.setMyID(id:int)\n"
+				"Alternately, set the screen ID manually by calling settings.setMyID(id:int)\n"
 			);
 			
 			return -1;

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="Build File" basedir="." default="build">
+<project name="Build File" basedir="." default="usage">
   <!-- External Settings -->
   <property file="${basedir}/build.properties" description="Subjective properties." />
   <!-- Required for OSX 10.6 / Snow Leopard Performance -->

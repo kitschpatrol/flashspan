@@ -76,7 +76,7 @@ package {
 			stage.nativeWindow.width = flashSpan.settings.thisScreen.screenWidth;
 			stage.nativeWindow.height = flashSpan.settings.thisScreen.screenHeight + 20; // compensate for title bar			
 			
-			// the span spparrite, includes automatic translation compensation
+			// the span sprite, includes automatic translation compensation
 			spanSprite = flashSpan.getSpanSprite();
 			addChild(spanSprite);
 			
