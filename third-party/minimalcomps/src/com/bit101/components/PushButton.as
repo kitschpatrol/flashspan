@@ -69,7 +69,7 @@ package com.bit101.components
 			super.init();
 			buttonMode = true;
 			useHandCursor = true;
-			setSize(100, 20);
+			setSize(80, 16);
 		}
 		
 		/**

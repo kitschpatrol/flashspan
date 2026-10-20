@@ -1,7 +1,7 @@
-Minimal Comps 0.9.10 by Keith Peters: demo UI source subset.
+Minimal Comps 0.9.10 by Keith Peters (kitschpatrol fork): demo UI source subset.
 
-Source: https://github.com/AdamHarte/minimalcomps/tree/5bfcc229de91b0e971773937d21d0f90a45d37cb
-Revision: 5bfcc229de91b0e971773937d21d0f90a45d37cb
+Source: https://github.com/kitschpatrol/minimalcomps/tree/c74314c56f14c21290b424d0a5893bbe3108db0b
+Revision: c74314c56f14c21290b424d0a5893bbe3108db0b
 
 Included, unmodified: Component, Style, Label, PushButton, and FPSMeter,
 plus the upstream PF Ronda Seven font required by Component's font embed.

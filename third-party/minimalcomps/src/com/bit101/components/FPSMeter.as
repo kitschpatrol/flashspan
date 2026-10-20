@@ -58,9 +58,19 @@
 			setSize(50, 20);
 			if(stage != null)
 			{
+				// Start listening right away
 				addEventListener(Event.ENTER_FRAME, onEnterFrame);
 			}
+			else {
+				// Start listening once we land on the stage
+				addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			}
 			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
+		}
+		
+		protected function onAddedToStage(event:Event):void {
+			removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			start();
 		}
 		
 		protected override function addChildren():void
@@ -102,6 +112,7 @@
 		 */
 		protected function onRemovedFromStage(event:Event):void
 		{
+			addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			stop();
 		}
 		

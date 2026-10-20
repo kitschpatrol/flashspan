@@ -45,6 +45,8 @@ package com.bit101.components
 		public static var LIST_ALTERNATE:uint = 0xF3F3F3;
 		public static var LIST_SELECTED:uint = 0xCCCCCC;
 		public static var LIST_ROLLOVER:uint = 0XDDDDDD;
+		public static var SELECTED:uint = 0xEEEEEE;
+		
 		
 		public static var embedFonts:Boolean = true;
 		public static var fontName:String = "PF Ronda Seven";
