@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="flashspan-build">
+  <property name="demo.screens" value="3" />
+  <property name="demo.width" value="400" />
+  <property name="demo.height" value="420" />
+  <property name="demo.port" value="63644" />
+  <property name="demo.sync" value="frame" />
+  <property name="air.sdk.home" value="" />
+
+  <target name="demo-runner">
+    <mkdir dir="${basedir}/.tools/demo-runner" />
+    <javac srcdir="${basedir}/build-resources" includes="Demo.java"
+           destdir="${basedir}/.tools/demo-runner" release="11"
+           encoding="UTF-8" includeantruntime="false" />
+  </target>
+
+  <macrodef name="run-demo">
+    <attribute name="mode" />
+    <sequential>
+      <java classname="Demo" classpath="${basedir}/.tools/demo-runner" fork="true" failonerror="true">
+        <arg value="@{mode}" />
+        <arg value="${basedir}" />
+        <arg value="${air.sdk.home}" />
+        <arg value="${demo.screens}" />
+        <arg value="${demo.width}" />
+        <arg value="${demo.height}" />
+        <arg value="${demo.port}" />
+        <arg value="${demo.sync}" />
+      </java>
+    </sequential>
+  </macrodef>
+
+  <target name="lib-compile" depends="demo-runner" description="Compile the release FlashSpan SWC without building the demo">
+    <run-demo mode="library" />
+  </target>
+  <target name="demo" depends="demo-runner" description="Build and run synchronized local AIR windows">
+    <run-demo mode="run" />
+  </target>
+  <target name="demo-build" depends="demo-runner" description="Compile the local AIR demo">
+    <run-demo mode="build" />
+  </target>
+  <target name="demo-check" depends="demo-runner" description="Check local frame synchronization and stop/restart">
+    <run-demo mode="check" />
+  </target>
+</project>

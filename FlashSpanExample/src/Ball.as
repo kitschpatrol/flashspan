@@ -19,6 +19,7 @@ package {
 	import flash.display.Sprite;
 	
 	public class Ball extends Sprite {
+		public static const DIAMETER:int = 40;
 		
 		public var vx:Number;
 		public var vy:Number;	
@@ -26,7 +27,7 @@ package {
 		public function Ball(color:uint) {
 			super();
 			this.graphics.beginFill(color);
-			this.graphics.drawEllipse(0, 0, 20, 20);
+			this.graphics.drawEllipse(0, 0, DIAMETER, DIAMETER);
 			this.graphics.endFill();
 		}
 	}

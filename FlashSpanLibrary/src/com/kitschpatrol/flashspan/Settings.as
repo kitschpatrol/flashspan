@@ -64,7 +64,7 @@ package com.kitschpatrol.flashspan {
 		public function load(filePath:String):void {
 			// load text file
 			logger.info("Settings File Path: " + filePath);
-			var file:File = new File(filePath);
+			var file:File = File.applicationDirectory.resolvePath(filePath);
 			var fileStream:FileStream = new FileStream();
 			fileStream.open(file, FileMode.READ);
 			

@@ -28,61 +28,55 @@ Each instance reads the same XML settings file describing every screen's IP addr
 
 ## Getting started
 
-### Dependencies
+### Run the local demo
 
-#### Development
+Install a **JDK 11 or newer** and [Apache Ant 1.10+](https://ant.apache.org/manual/install.html). On macOS with Homebrew, `brew install ant` includes a JDK. On Windows, install a JDK and Ant, and make sure `ant` is on your `PATH`.
 
-- [Adobe Flex SDK (4.5.1+)](https://flex.apache.org/download-binaries.html)
-- [Apache Ant](https://ant.apache.org/bindownload.cgi)
-- [Ant XMLTask](https://www.oopsconsultancy.com/software/xmltask/) (Included)
-- [Ant-Contrib](https://sourceforge.net/projects/ant-contrib/) (Included, version 1.0b3)
+```sh
+git clone https://github.com/kitschpatrol/flashspan.git
+cd flashspan
+ant demo
+```
 
-The prebuilt SWC in `lib-release` was compiled with Flex SDK 4.5.1 (build 21328), and the example's AIR application descriptor uses the AIR 2.6 namespace.
+This downloads the full **AIR SDK 51.4.1.2**, checks its SHA-256 checksum, compiles the current library and example, and opens three windows with synchronized bouncing balls. Each window represents one slice of a shared canvas. Click below the controls to add a ball; Start, Stop, + Balls, Clear, and Quit All affect all screens. Close any window or press Ctrl+C in the terminal to end the demo.
 
-#### Deployment
+The first run downloads approximately 600 MB and extracts the SDK into `.tools`; later runs reuse it. All generated app files and logs are in `demo-build`. Both directories are ignored by Git. The runner needs no Python, Node.js, separate Flex SDK, IDE, or system AIR runtime.
 
-- [AS3 Commons Logging](https://github.com/bridgeZS/as3commons/tree/master/as3-commons-logging) (Or [here](https://github.com/collectivecolors/as3-org.as3commons.logging).)
-- [Minimal Comps](https://web.archive.org/web/20130106193620/http://www.minimalcomps.com/) (Or [here](https://github.com/AdamHarte/minimalcomps).) (Only required for the example.)
-- [MonsterDebugger](https://github.com/demonsters/MonsterDebugger) (Only required for the example.)
+AIR is maintained by Wipro (previously HARMAN). The [full AIR SDK](https://airsdk.wxlift.com/download) includes the AS3 application compiler (`mxmlc`), library compiler (`compc`), and AIR Debug Launcher (`adl`). The automated download uses the vendor's license-accepted endpoint; review the SDK license before downloading. The archive includes `AIR SDK license.pdf`. For a manual installation, use the [AIR SDK Manager](https://github.com/airsdk/airsdkmanager-releases/releases/latest) and select the full ActionScript SDK.
 
-None of these libraries are included in the repository. The build script looks for library SWCs in `FlashSpanLibrary/libs` and `FlashSpanExample/libs`.
+Homebrew's [`adobe-air` cask](https://formulae.brew.sh/cask/adobe-air) installs the shared runtime for installed AIR applications. The SDK's debug launcher runs this demo directly.
 
-### Installation
+To use an existing full AIR SDK instead of downloading one, set `AIR_SDK_HOME` or pass its path:
 
-Due to the complexity involved in testing multiple instances of an AIR app on one machine, the project relies on custom Ant build files for compilation and testing.
+```sh
+ant -Dair.sdk.home="/path/to/AIRSDK" demo
+```
 
-1. Clone the repository:
+The example descriptor requires AIR 51.0 or newer. The downloaded macOS debug launcher supports both Apple Silicon and Intel; the Windows runner uses the 64-bit debug launcher.
 
-   ```sh
-   git clone https://github.com/kitschpatrol/flashspan.git
-   ```
+| Command                                      | Result                                                                                                                |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `ant demo`                                   | Build and run three local windows.                                                                                    |
+| `ant -Ddemo.screens=1 demo`                  | Run a single window.                                                                                                  |
+| `ant -Ddemo.screens=2 -Ddemo.width=500 demo` | Run two wider windows.                                                                                                |
+| `ant -Ddemo.sync=time demo`                  | Run the demo with time sync.                                                                                          |
+| `ant -Ddemo.port=64000 demo`                 | Use another UDP port range if the default ports are busy.                                                             |
+| `ant demo-build`                             | Compile without opening windows. The library is `demo-build/FlashSpan.swc`.                                           |
+| `ant demo-check`                             | Open three windows, compare their animation states, check clear/add/click messages and stop/restart, then close them. |
 
-2. Set `SDK_HOME` in `build.properties` to the location of your Flex SDK.
+`demo.screens` accepts 1–10 screens; `demo.width` and `demo.height` set each window's content size (defaults: 400 × 420). Ports start at `demo.port` (default: 63644), one per screen. The local settings use `127.0.0.1` throughout. Running across multiple computers requires settings with the actual IP addresses and reachable UDP ports.
 
-3. Put the AS3 Commons Logging SWC in `FlashSpanLibrary/libs`, and the Minimal Comps and MonsterDebugger SWCs in `FlashSpanExample/libs`.
+Verified on macOS 15 with Apple Silicon, JDK 27, Ant 1.10.18, and AIR 51.4.1.2. The Windows SDK archive and launcher layout have been checked; the Windows runtime path still needs testing on Windows.
 
-4. Build the library:
+### Build the library
 
-   ```sh
-   ant lib-compile
-   ```
+```sh
+ant lib-compile
+```
 
-   This writes `FlashSpan.swc` to `lib-release`.
+This compiles the current library source and its vendored logging dependency into `lib-release/FlashSpan.swc` in release mode. It uses the same AIR SDK cache as the demo targets and does not compile or launch the example.
 
-The available Ant targets:
-
-| Target                  | Description                                                                                   |
-| ----------------------- | --------------------------------------------------------------------------------------------- |
-| `usage`                 | Lists the available targets. This is the default.                                             |
-| `clean`                 | Removes all generated directories.                                                            |
-| `lib-compile`           | Compiles the FlashSpan SWC library file in release mode.                                      |
-| `lib-compile-debug`     | Compiles the FlashSpan SWC library file in debug mode.                                        |
-| `example-compile`       | Compiles the example application in release mode.                                             |
-| `example-compile-debug` | Compiles the example application in debug mode.                                               |
-| `test`                  | Compiles everything in debug mode and launches a single instance of the example application.  |
-| `test-multi`            | Compiles everything in debug mode and launches multiple instances of the example application. |
-
-The screen count, total size, and starting port used by `test-multi` are set in `build.properties`.
+`ant clean` removes the generated library, demo files, and compiled Java runner. It retains the downloaded SDK so the next build can reuse it.
 
 ## Usage
 
@@ -175,7 +169,7 @@ Events dispatched by `FlashSpan`:
 
 An AIR app in `FlashSpanExample` that bounces balls across all of the screens. Click anywhere to add a ball, or use the buttons to start and stop syncing, add or clear balls, and quit every instance. It supports both frame and time sync modes, and uses custom messages to pass clicks and the add and clear buttons to every screen.
 
-Run `ant test` to launch a single instance, or `ant test-multi` to launch one instance per screen, tiled horizontally on one machine. The example was written against an earlier version of the library and doesn't compile against the current source. See [Known issues](#known-issues).
+Run `ant demo` for three automatically started windows, or `ant -Ddemo.screens=1 demo` for a single window. The launcher writes a separate descriptor and settings file for each screen and waits for each client to bind its UDP socket before starting the server.
 
 ## Background
 
@@ -190,16 +184,10 @@ Run `ant test` to launch a single instance, or `ant test-multi` to launch one in
 
 ### Known issues
 
-- The example doesn't compile against the current library. It uses `SpanSprite` and `getSpanSprite()`, which were removed in the 2.0 update, calls `flashSpan.random()` instead of `flashSpan.random.random()`, and reads `screenWidth` and `screenHeight` from `NetworkedScreen`, which only has `width` and `height`.
-- When the example is launched without a screen ID argument, it calls `getIDfromIP()` on a `FlashSpan` instance that doesn't exist yet, and passes a hard-coded `"E:\flash_span_settings.xml"` path in which `\f` is read as an escape character.
-- The settings templates in `build-resources` use `totalWidth`, `totalHeight`, `scaleFactor`, and per-screen sizes and offsets, while `Settings` reads `screenWidth`, `screenHeight`, and `bezelWidth` and calculates the rest. Settings files generated by the Ant build leave the screen size at 0.
-- The prebuilt `lib-release/FlashSpanLibrary.swc` dates from November 2011. It predates the 2.0 source: it still contains `SpanSprite` and MonsterDebugger and doesn't use AS3 Commons Logging.
 - The `server` setting is read but not used. Screen 0 is always the server.
-- In the packet handler, the start request case falls through to the stop request case. Calling `start()` while already syncing also creates a second sync timer.
 - Certified packets that time out aren't resent.
 - The random seed is fixed at 1 and can't be set from the settings file.
 - Finding the screen ID from the computer's IP address is marked as untested in the source.
-- The minimum Apache Ant version hasn't been determined.
 
 ## Maintainers
 
@@ -234,7 +222,3 @@ This repository uses [MDAT](https://github.com/kitschpatrol/mdat) for readme pla
 [LGPL-3.0-or-later](COPYING.LESSER) © [Eric Mika](https://ericmika.com)
 
 <!-- /license -->
-
-FlashSpan is licensed under the GNU Lesser General Public License. You may link to it from closed-source software, but any improvements made to the library itself must also be released under the LGPL.
-
-`Random.as` is based on [Rndm](https://gskinner.com/) by Grant Skinner, copyright 2008, and is released under the MIT License. See the header of that file for the full license text.

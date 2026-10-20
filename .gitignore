@@ -1,13 +1,12 @@
 .DS_Store
 .air
 *.actionScriptProperties
-example-debug-multi
-example-debug
 /.metadata/
-/lib-debug/
+/lib-release/
 /org.eclipse.core.resources.prefs
 *.settings
 */bin-debug/*
 /FlashSpanLibrary/bin/
 /flash_builder_test_dump.xml
-/example-debug/
+/.tools/
+/demo-build/

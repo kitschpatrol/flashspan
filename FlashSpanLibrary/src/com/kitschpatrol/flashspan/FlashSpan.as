@@ -167,6 +167,7 @@ package com.kitschpatrol.flashspan {
 		}
 		
 		public function start():void {
+			if (isSyncing || (syncTimer != null && syncTimer.running)) return;
 			if (isServer) {		
 				
 				// disable pinging to save bandwidth
@@ -336,6 +337,7 @@ package com.kitschpatrol.flashspan {
 					// for server
 					case START_SYNC_HEADER:
 						start();			
+						break;
 						
 					case STOP_REQUEST_HEADER:
 						stop();

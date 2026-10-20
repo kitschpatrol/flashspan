@@ -1,0 +1,14 @@
+PF Ronda Seven by Yusuke (Yuusuke) Kamiyamane
+Copyright (C) 2007 Yuusuke Kamiyamane. All Rights Reserved.
+
+The font is included unmodified from the pinned Minimal Comps source tree:
+https://github.com/AdamHarte/minimalcomps/blob/5bfcc229de91b0e971773937d21d0f90a45d37cb/src/assets/pf_ronda_seven.ttf
+
+The author's font page states:
+"These fonts can be used free for any personal or commercial projects."
+
+Source: https://p.yusukekamiyamane.com/fonts/
+Checked: 2026-10-19
+
+This permission applies to the font separately from the MIT-licensed
+Minimal Comps ActionScript source. The font is embedded in the demo UI.
